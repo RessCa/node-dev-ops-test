@@ -1,4 +1,4 @@
-name: CI/CD on Github Actions Node + Docker
+name: CI/CD on GitHub Actions Node + Docker
 
 on:
   push:
@@ -11,6 +11,9 @@ on:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     env:
       IMAGE_NAME: ${{ github.repository }}
