@@ -1,4 +1,4 @@
-name: CI/CD Node + Docker
+name: CI/CD on Github Actions Node + Docker
 
 on:
   push:
@@ -7,7 +7,6 @@ on:
   pull_request:
     branches:
       - main
-
 
 jobs:
   build-and-publish:
@@ -31,14 +30,20 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 4. Run tests (jeśli masz testy)
+      # 4. Run tests (if you have any)
       - name: Run tests
         run: |
           if [ -f package.json ]; then
             npm test || echo "No tests found, skipping"
           fi
 
-      # 5. Log in to GitHub Container Registry
+      # 5. Prepare lowercase image name and SHA tag
+      - name: Prepare lowercase name
+        run: |
+          echo "IMAGE_NAME=$(echo '${{ env.IMAGE_NAME }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      # 6. Log in to GitHub Container Registry
       - name: Log in to GHCR
         uses: docker/login-action@v2
         with:
@@ -46,10 +51,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # 6. Build Docker image
+      # 7. Build Docker image (with two tags: SHA and latest)
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository }}:latest .
+        run: |
+          docker build \
+            -t ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
+            -t ghcr.io/${{ env.IMAGE_NAME }}:latest .
 
-      # 7. Push Docker image to GHCR
+      # 8. Push Docker image
       - name: Push Docker image
-        run: docker push ghcr.io/${{ github.repository }}:latest
+        run: |
+          docker push ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker push ghcr.io/${{ env.IMAGE_NAME }}:latest
