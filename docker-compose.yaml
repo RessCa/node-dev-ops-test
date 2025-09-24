@@ -1,0 +1,8 @@
+version: "3.8"
+
+servces:
+  app:
+    Build: .
+    Ports:
+      - "3000:3000"
+    restart: no 

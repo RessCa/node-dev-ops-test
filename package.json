@@ -1,0 +1,14 @@
+{
+  "name": "nodedevopstest",
+  "version": "1.0.0",
+  "description": "Dev Ops and Docekr test with node on github actions",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "RessCa",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
