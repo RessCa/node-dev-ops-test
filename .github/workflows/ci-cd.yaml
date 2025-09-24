@@ -36,8 +36,10 @@ jobs:
       # 4. Run tests (if you have any)
       - name: Run tests
         run: |
-          if [ -f package.json ]; then
-            npm test || echo "No tests found, skipping"
+          if npm run test --dry-run 2>/dev/null; then
+            npm test
+          else
+            echo "No tests found, skipping"
           fi
 
       # 5. Prepare lowercase image name and SHA tag
